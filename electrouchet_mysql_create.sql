@@ -39,7 +39,7 @@ INSERT INTO `organization` (`ID`, `name`) VALUES ('10', 'nulla');
 DROP TABLE IF EXISTS `users_subs`;
 
 CREATE TABLE `users_subs` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `role` enum('Пользователь','Подписчик') COLLATE utf8_unicode_ci NOT NULL,
   `org_id` bigint(255) NOT NULL,
@@ -395,4 +395,23 @@ select id, name as organization_name,
 from organization;
 
 -- здесь должен быть код триггера
+use Electrouchet;
+delimiter //
+create trigger IdDateUser after insert
+on users_subs
+for each row
+begin
+insert into users_subs(id) values (new.id);
+end;
 -- здесь должен быть код хранимой процедуры
+use Electrouchet;
+delimiter //
+create procedure GetAllUsers()
+begin
+select * from users_subs;
+end//
+delimiter ;
+
+-- для проверки работы триггера
+use Electrouchet;
+INSERT INTO `users_subs` (`name`, `role`, `org_id`) VALUES ('Dimon', 'Подписчик', '3');
